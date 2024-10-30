@@ -1,0 +1,11 @@
+[project]
+name = "flask-app"
+version = "0.1.0"
+description = "A minimal Flask application"
+requires-python = ">=3.13"
+dependencies = [
+    "flask",
+    "waitress",
+    "flask-login",
+    "werkzeug"
+] 
