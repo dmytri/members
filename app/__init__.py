@@ -1,10 +1,11 @@
+import os
 from flask import Flask
 from flask_login import LoginManager
-from flask_migrate import Migrate
+from flask_migrate import Migrate, init, migrate, upgrade
 from app.models import db
 
 login_manager = LoginManager()
-migrate = Migrate()
+migrate_extension = Migrate()
 
 def init_login_manager(app):
     login_manager.init_app(app)
@@ -22,8 +23,17 @@ def create_app():
     
     # Initialize extensions
     db.init_app(app)
-    migrate.init_app(app, db)
+    migrate_extension.init_app(app, db)
     init_login_manager(app)
+    
+    # Initialize and upgrade database
+    with app.app_context():
+        migrations_dir = os.path.join(os.path.dirname(__file__), '..', 'migrations')
+        alembic_ini = os.path.join(migrations_dir, 'alembic.ini')
+        if not os.path.exists(alembic_ini):
+            init()
+        migrate(message='Initial migration')
+        upgrade()
     
     # Register routes
     from app.routes import bp

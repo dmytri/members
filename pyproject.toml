@@ -10,4 +10,10 @@ dependencies = [
     "werkzeug",
     "flask-migrate",
     "flask-sqlalchemy"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-playwright"
 ] 

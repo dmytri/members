@@ -9,8 +9,13 @@ RUN mkdir -p app/static \
 # Copy dependency files
 COPY pyproject.toml .
 
-# Install dependencies using uv sync (no dev dependencies)
-RUN uv sync --no-dev
+# Install dependencies using uv sync
+ARG ENV=prod
+RUN if [ "$ENV" = "dev" ]; then \
+        uv sync; \
+    else \
+        uv sync --no-dev; \
+    fi
 
 # Update PATH to include local bin
 ENV PATH="/srv/.venv/bin:$PATH"

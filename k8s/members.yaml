@@ -35,21 +35,11 @@ spec:
       labels:
         app: flask-app
     spec:
-      initContainers:
-      - name: init-db
-        image: flask-app
-        command:
-        - /bin/sh
-        - -c
-        - |
-          flask db init
-          flask db migrate -m "Initial migration"
-          flask db upgrade
-        volumeMounts:
-        - name: sqlite-storage
-          mountPath: /srv/instance
-        - name: migrations
-          mountPath: /srv/migrations
+      volumes:
+      - name: sqlite-storage
+        persistentVolumeClaim:
+          claimName: sqlite-pvc
+      - name: migrations
       containers:
       - name: flask-app
         image: flask-app
@@ -60,12 +50,6 @@ spec:
           mountPath: /srv/instance
         - name: migrations
           mountPath: /srv/migrations
-      volumes:
-      - name: sqlite-storage
-        persistentVolumeClaim:
-          claimName: sqlite-pvc
-      - name: migrations
-        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
