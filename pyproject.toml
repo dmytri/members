@@ -7,5 +7,7 @@ dependencies = [
     "flask",
     "waitress",
     "flask-login",
-    "werkzeug"
+    "werkzeug",
+    "flask-migrate",
+    "flask-sqlalchemy"
 ] 

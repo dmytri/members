@@ -1,13 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_user, logout_user, login_required, current_user
-from app.models import User, users, get_user
-from app import login_manager
+from app.models import User, db
 
 bp = Blueprint('main', __name__)
-
-@login_manager.user_loader
-def load_user(email):
-    return get_user(email)
 
 @bp.route('/')
 def home():
@@ -23,7 +18,7 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        user = get_user(email)
+        user = User.query.filter_by(email=email).first()
         
         if user and user.check_password(password):
             login_user(user)
@@ -38,12 +33,13 @@ def register():
         email = request.form['email']
         password = request.form['password']
         
-        if email in users:
+        if User.query.filter_by(email=email).first():
             flash('Email already registered')
         else:
-            user = User(email)
+            user = User(email=email)
             user.set_password(password)
-            users[email] = user
+            db.session.add(user)
+            db.session.commit()
             login_user(user)
             return redirect(url_for('main.home'))
             
@@ -53,7 +49,7 @@ def register():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('main.login'))
+    return redirect(url_for('main.home'))
 
 @bp.route('/content/<page>')
 def content(page):
