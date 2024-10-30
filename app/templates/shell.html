@@ -4,31 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Members - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='tachyons.min.css') }}"/>
 </head>
-<body>
-    <nav>
-        <ul>
-            <li><a href="{{ url_for('main.home') }}">Home</a></li>
-            {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
-            {% else %}
-                <li><a href="{{ url_for('main.login') }}">Login</a></li>
-                <li><a href="{{ url_for('main.register') }}">Register</a></li>
-            {% endif %}
-        </ul>
+<body class="bg-light-gray min-vh-100">
+    <nav class="bg-white shadow-2">
+        <div class="mw8 center ph3">
+            <ul class="list flex pa0">
+                <li class="mr3"><a href="{{ url_for('main.home') }}" class="link dark-gray hover-black pv3 dib">Home</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.logout') }}" class="link dark-gray hover-black pv3 dib">Logout</a></li>
+                {% else %}
+                    <li class="mr3"><a href="{{ url_for('main.login') }}" class="link dark-gray hover-black pv3 dib">Login</a></li>
+                    <li><a href="{{ url_for('main.register') }}" class="link dark-gray hover-black pv3 dib">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
     </nav>
     
     {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <ul class="messages">
+            <div class="mw8 center ph3 mt4">
                 {% for message in messages %}
-                    <li>{{ message }}</li>
+                    <div class="bg-washed-red dark-red pa3 br2">
+                        {{ message }}
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
         {% endif %}
     {% endwith %}
     
-    <main id="content">
+    <main class="mw8 center ph3 pv4">
         {% include page + '.html' %}
     </main>
 </body>

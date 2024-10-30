@@ -2,6 +2,10 @@ FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 
 WORKDIR /srv
 
+# Create app/static directory and download Tachyons CSS
+RUN mkdir -p app/static \
+    && python -c "import urllib.request; urllib.request.urlretrieve('https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css', 'app/static/tachyons.min.css')"
+
 # Copy dependency files
 COPY pyproject.toml .
 
