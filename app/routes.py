@@ -10,10 +10,13 @@ def load_user(email):
     return get_user(email)
 
 @bp.route('/')
-@bp.route('/home')
-@login_required
 def home():
-    return render_template('shell.html', page='home')
+    return render_template('home.html')
+
+@bp.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -27,7 +30,7 @@ def login():
             return redirect(url_for('main.home'))
         flash('Invalid email or password')
     
-    return render_template('shell.html', page='login')
+    return render_template('login.html')
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -44,7 +47,7 @@ def register():
             login_user(user)
             return redirect(url_for('main.home'))
             
-    return render_template('shell.html', page='register')
+    return render_template('register.html')
 
 @bp.route('/logout')
 @login_required

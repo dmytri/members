@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Members - {% block title %}{% endblock %}</title>
+    <title>{% block title %}{% endblock %} - Members</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='tachyons.min.css') }}"/>
 </head>
-<body class="bg-light-gray min-vh-100">
-    <nav class="bg-white shadow-2">
+<body class="bg-white sans-serif">
+    <nav class="bg-black-90 w-100">
         <div class="mw8 center ph3">
-            <ul class="list flex pa0">
-                <li class="mr3"><a href="{{ url_for('main.home') }}" class="link dark-gray hover-black pv3 dib">Home</a></li>
+            <ul class="list flex pa0 mv0">
+                <li class="mr4"><a href="{{ url_for('main.home') }}" class="link white-90 hover-white ttu tracked pv3 dib f6 fw6">Home</a></li>
                 {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('main.logout') }}" class="link dark-gray hover-black pv3 dib">Logout</a></li>
+                    <li class="mr4"><a href="{{ url_for('main.dashboard') }}" class="link white-90 hover-white ttu tracked pv3 dib f6 fw6">Dashboard</a></li>
+                    <li><a href="{{ url_for('main.logout') }}" class="link white-90 hover-white ttu tracked pv3 dib f6 fw6">Logout</a></li>
                 {% else %}
-                    <li class="mr3"><a href="{{ url_for('main.login') }}" class="link dark-gray hover-black pv3 dib">Login</a></li>
-                    <li><a href="{{ url_for('main.register') }}" class="link dark-gray hover-black pv3 dib">Register</a></li>
+                    <li class="mr4"><a href="{{ url_for('main.login') }}" class="link white-90 hover-white ttu tracked pv3 dib f6 fw6">Login</a></li>
+                    <li><a href="{{ url_for('main.register') }}" class="link white-90 hover-white ttu tracked pv3 dib f6 fw6">Register</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -25,7 +26,7 @@
         {% if messages %}
             <div class="mw8 center ph3 mt4">
                 {% for message in messages %}
-                    <div class="bg-washed-red dark-red pa3 br2">
+                    <div class="bg-light-red dark-red pa3">
                         {{ message }}
                     </div>
                 {% endfor %}
@@ -33,8 +34,13 @@
         {% endif %}
     {% endwith %}
     
-    <main class="mw8 center ph3 pv4">
-        {% include page + '.html' %}
+    <main class="mw8 center ph3 pv5">
+        <article class="pb5">
+            <h1 class="f2 f1-ns lh-title fw9 mb4 mt0 pt3 bt bw2">
+                {% block heading %}{{ self.title() }}{% endblock %}
+            </h1>
+            {% block content %}{% endblock %}
+        </article>
     </main>
 </body>
 </html> 
