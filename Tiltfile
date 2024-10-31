@@ -10,34 +10,33 @@ namespace_create(namespace)
 # Load and inject namespace into YAML
 k8s_yaml(namespace_inject(read_file('k8s/members.yaml'), namespace))
 
-# Build with dev dependencies and fast sync for all code
+# Build app image with all dependencies
 docker_build('flask-app', '.', 
-    build_args={'ENV': 'dev'},
     live_update=[
         sync('.', '/srv')
     ]
 )
 
 # Port forward
-k8s_resource('flask-app', port_forwards='8000:8000')
+k8s_resource('flask-app', port_forwards=['8000:8000'])
 
-# Add local resource for tests
+# Add local resource for tests in container
 local_resource(
     'tests',
-    cmd='pytest',
+    cmd='kubectl exec -it -n {} deployment/flask-app -- pytest -v --capture=tee-sys --html=app/static/tests/index.html'.format(namespace),
     deps=['tests/', 'app/'],
     resource_deps=['flask-app'],
     auto_init=False,
-    labels=['testing']
+    labels=['testing'],
+    links=[
+        link('http://localhost:8000/tests', 'Test Report')
+    ]
 )
 
 # Manual migration sync from container to local
 local_resource(
     name='fetch-migrations',
-    cmd='''
-    POD=$(kubectl get pods -l app=flask-app -o jsonpath="{.items[0].metadata.name}")
-    kubectl cp $POD:/srv/migrations/ ./
-    ''',
+    cmd='kubectl cp -n {} deployment/flask-app:/srv/migrations/ ./'.format(namespace),
     auto_init=False,
     trigger_mode=TRIGGER_MODE_MANUAL,
     labels=['sync']

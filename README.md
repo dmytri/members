@@ -30,3 +30,42 @@ A platform for member organization and coordination.
    - Tilt UI: http://localhost:10350 (see build status, logs, and services)
 
 Press `Ctrl+C` to stop Tilt.
+
+## Database Management
+
+The application uses SQLite with Flask-Migrate for database management.
+
+### Working with Migrations
+
+1. Create a new migration:
+   ```bash
+   tilt cmd -- flask db migrate -m "Description of changes"
+   ```
+
+2. Apply migrations:
+   ```bash
+   tilt cmd -- flask db upgrade
+   ```
+
+3. Rollback migrations:
+   ```bash
+   tilt cmd -- flask db downgrade
+   ```
+
+4. View migration status:
+   ```bash
+   tilt cmd -- flask db current
+   ```
+
+### Development Database
+
+- Location: `/srv/instance/app.db` in the container
+- Persisted via Kubernetes volume
+- Test database uses in-memory SQLite
+
+## Environment Variables
+
+- `SECRET_KEY`: Used for session security (defaults to 'dev' in development)
+  ```bash
+  export SECRET_KEY='your-secure-key-here'  # For production
+  ```

@@ -18,22 +18,48 @@ def init_login_manager(app):
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'dev'  # Change this in production!
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+    
+    # Apply test config if it exists
+    if hasattr(Flask, 'test_config'):
+        app.config.update(Flask.test_config)
+        delattr(Flask, 'test_config')
+    
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev')
+    if 'SQLALCHEMY_DATABASE_URI' not in app.config:
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+    
+    print("\nDatabase URI check:")
+    print(f"  Current URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
+    print(f"  Is memory database: {'sqlite:///:memory:' in app.config['SQLALCHEMY_DATABASE_URI']}\n")
     
     # Initialize extensions
     db.init_app(app)
     migrate_extension.init_app(app, db)
     init_login_manager(app)
     
-    # Initialize and upgrade database
+    # Initialize database
     with app.app_context():
-        migrations_dir = os.path.join(os.path.dirname(__file__), '..', 'migrations')
-        alembic_ini = os.path.join(migrations_dir, 'alembic.ini')
-        if not os.path.exists(alembic_ini):
-            init()
-        migrate(message='Initial migration')
-        upgrade()
+        if 'sqlite:///:memory:' in app.config['SQLALCHEMY_DATABASE_URI']:
+            print("Test database detected - creating tables directly")
+            db.create_all()
+        else:
+            migrations_dir = os.path.join(os.path.dirname(__file__), '..', 'migrations')
+            alembic_ini = os.path.join(migrations_dir, 'alembic.ini')
+            
+            if not os.path.exists(alembic_ini):
+                print("No migrations found - initializing...")
+                init()
+                print("Creating initial migration...")
+                migrate(message='Initial migration')
+                print("Applying initial migration...")
+                upgrade()
+            else:
+                print("Creating new migration...")
+                migrate(message='Auto-migration')
+                print("Applying new migration...")
+                upgrade()
+            
+            print("Database initialization complete\n")
     
     # Register routes
     from app.routes import bp
