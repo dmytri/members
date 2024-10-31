@@ -15,5 +15,7 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "pytest",
-    "pytest-playwright"
+    "pytest-html",
+    "pytest-playwright",
+    "playwright"
 ] 

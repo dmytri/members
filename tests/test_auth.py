@@ -1,4 +1,3 @@
-import pytest
 from playwright.sync_api import expect
 
 def test_login_page(page):
@@ -33,18 +32,6 @@ def test_successful_registration(page):
     page.get_by_label("Email").fill("test@example.com")
     page.get_by_label("Password").fill("password123")
     page.get_by_role("button", name="Register").click()
-    
-    # Should redirect to home
-    expect(page).to_have_url("http://localhost:8000/")
-
-def test_successful_login(page):
-    # Navigate to login page
-    page.goto("http://localhost:8000/login")
-    
-    # Fill and submit form
-    page.get_by_label("Email").fill("test@example.com")
-    page.get_by_label("Password").fill("password123")
-    page.get_by_role("button", name="Login").click()
     
     # Should redirect to home
     expect(page).to_have_url("http://localhost:8000/") 

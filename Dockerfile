@@ -9,16 +9,16 @@ RUN mkdir -p app/static \
 # Copy dependency files
 COPY pyproject.toml .
 
-# Install dependencies using uv sync
-ARG ENV=prod
-RUN if [ "$ENV" = "dev" ]; then \
-        uv sync; \
-    else \
-        uv sync --no-dev; \
-    fi
+ENV UV_SYSTEM_PYTHON=1
+
+# Install all dependencies including test ones
+RUN uv sync --all-extras
 
 # Update PATH to include local bin
 ENV PATH="/srv/.venv/bin:$PATH"
+
+# Install playwright browsers
+RUN uv run playwright install chromium --with-deps
 
 # Copy application code
 COPY . .
@@ -27,4 +27,4 @@ COPY . .
 EXPOSE 8000
 
 # Run using waitress
-CMD ["waitress-serve", "--host=0.0.0.0", "--port=8000", "--call", "app:create_app"] 
+CMD ["waitress-serve", "--host=0.0.0.0", "--port=8000", "--call", "app:create_app"]

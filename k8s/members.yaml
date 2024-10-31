@@ -39,17 +39,15 @@ spec:
       - name: sqlite-storage
         persistentVolumeClaim:
           claimName: sqlite-pvc
-      - name: migrations
       containers:
       - name: flask-app
         image: flask-app
         ports:
         - containerPort: 8000
+        - containerPort: 9323
         volumeMounts:
         - name: sqlite-storage
           mountPath: /srv/instance
-        - name: migrations
-          mountPath: /srv/migrations
 ---
 apiVersion: v1
 kind: Service

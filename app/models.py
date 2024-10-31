@@ -17,9 +17,3 @@ class User(UserMixin, db.Model):
         
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-
-# Simple in-memory user store (replace with database in production)
-users = {}
-
-def get_user(email):
-    return users.get(email)

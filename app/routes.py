@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
 from app.models import User, db
 
@@ -12,6 +12,10 @@ def home():
 @login_required
 def dashboard():
     return render_template('dashboard.html')
+
+@bp.route('/tests')
+def tests():
+    return redirect(url_for('static', filename='tests/index.html'))
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -50,7 +54,3 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('main.home'))
-
-@bp.route('/content/<page>')
-def content(page):
-    return render_template(f'{page}.html')
