@@ -11,9 +11,12 @@ namespace_create(namespace)
 k8s_yaml(namespace_inject(read_file('k8s/members.yaml'), namespace))
 
 # Build app image with all dependencies
-docker_build('flask-app', '.', 
+docker_build(
+    'flask-app',
+    '.',
     live_update=[
-        sync('.', '/srv')
+        sync('.', '/srv'),
+        run('pip install -e .', trigger=['setup.py', 'requirements.txt']),
     ]
 )
 
@@ -26,7 +29,7 @@ local_resource(
     cmd='kubectl exec -it -n {} deployment/flask-app -- pytest -v --capture=tee-sys --html=app/static/tests/index.html'.format(namespace),
     deps=['tests/', 'app/'],
     resource_deps=['flask-app'],
-    auto_init=False,
+    auto_init=True,
     labels=['testing'],
     links=[
         link('http://localhost:8000/tests', 'Test Report')

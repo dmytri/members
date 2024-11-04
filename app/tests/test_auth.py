@@ -44,15 +44,20 @@ def test_registration(client):
     print("  Registration test complete")
 
 def test_login(client):
-    # Register first
+    print("\nTesting login flow:")
+    
+    print("  Registering test user")
     client.post('/register', data={
         'email': 'test@example.com',
         'password': 'password123'
     })
     
-    # Then login
+    print("  Attempting login")
     response = client.post('/login', data={
         'email': 'test@example.com',
         'password': 'password123'
     }, follow_redirects=True)
+    
+    print(f"  Checking response status: {response.status_code}")
     assert response.status_code == 200
+    print("  Login test complete")
